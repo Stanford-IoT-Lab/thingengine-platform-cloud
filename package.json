@@ -57,7 +57,7 @@
     "genie-toolkit": "github:stanford-oval/genie-toolkit",
     "gettext-parser": "^4.0.4",
     "gm": "^1.23.1",
-    "highlight.js": "^10.7.3",
+    "highlight.js": "^11.0.1",
     "http-proxy": "^1.18.1",
     "img-color-extractor": "^1.0.7",
     "js-yaml": "^4.0.0",
