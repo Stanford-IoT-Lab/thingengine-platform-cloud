@@ -19,3 +19,23 @@ SUPPORTED_LANGUAGES:
   - it-IT
   - zh-CN
   - zh-TW
+USE_BRAND: stanford
+
+ABOUT_OVERRIDE:
+  index: stanford/about_index.pug
+  tos: stanford/about_tos.pug
+  privacy: stanford/about_privacy.pug
+
+EXTRA_ABOUT_PAGES:
+  - url: get-almond
+    view: stanford/about_get_almond.pug
+    title: "Get Almond"
+  - url: get-involved
+    view: stanford/about_get_involved.pug
+    title: "Get Involved With Almond"
+
+EXTRA_NAVBAR:
+  - url: https://oval.cs.stanford.edu
+    title: "OVAL Lab"
+
+DISCOURSE_SSO_REDIRECT: https://discourse.almond.stanford.edu

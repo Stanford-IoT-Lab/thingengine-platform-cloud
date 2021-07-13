@@ -14,6 +14,3 @@ configMapGenerator:
 - name: almond-config
   files:
     - config.d/config.yaml
-- name: stanford-config
-  files:
-    - config.d/stanford.js

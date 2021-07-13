@@ -15,7 +15,15 @@ spec:
       - name: main
         image: localhost/almond-test:latest
         imagePullPolicy: IfNotPresent
-        args: [ "run-frontend",  "--k8s"]
+        command: ["/bin/bash"]
+        args:
+          - -c
+          - |
+            set -ex
+            cd /opt/almond-cloud
+            npx nyc /opt/almond-cloud/tests/thingpedia-integration/k8s/start.sh run-frontend --k8s &
+            wait $!
+            while [ 1 ]; do sleep 100; done          
         env:
         - name: NODE_MAX_OLD_SPACE_SIZE
           value: "2000"
@@ -24,10 +32,6 @@ spec:
           name: config
           readOnly: true
           subPath: config.yaml
-        - mountPath: /etc/almond-cloud/config.d/stanford.js
-          name: stanford
-          readOnly: true
-          subPath: stanford.js
         ports:
         - containerPort: 8080
           name: web
@@ -52,9 +56,6 @@ spec:
       - configMap:
           name: almond-config
         name: config
-      - configMap:
-          name: stanford-config
-        name: stanford
 ---
 apiVersion: v1
 kind: Service

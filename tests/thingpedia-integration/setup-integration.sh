@@ -11,6 +11,6 @@ kind create cluster --config=$srcdir/tests/thingpedia-integration/k8s/cluster.ya
 kind load docker-image localhost/almond-cloud
 kind load docker-image localhost/almond-test
 kustomize build $srcdir/tests/thingpedia-integration/k8s/database | kubectl apply -f -
-kubectl wait --for=condition=complete  job/create-db
+kubectl wait --timeout=120s --for=condition=complete  job/create-db
 kustomize build $srcdir/tests/thingpedia-integration/k8s | kubectl apply -f -
-kubectl wait --for=condition=Available  deployment/frontend
+kubectl wait --timeout=120s --for=condition=Available  deployment/frontend
