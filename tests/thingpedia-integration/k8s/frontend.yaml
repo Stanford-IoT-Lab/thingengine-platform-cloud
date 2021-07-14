@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: main
+        image: localhost/almond-test:latest
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/bash"]
+        args:
+          - -c
+          - |
+            set -ex
+            cd /opt/almond-cloud
+            npx nyc /opt/almond-cloud/tests/thingpedia-integration/k8s/start.sh run-frontend --k8s &
+            wait $!
+            while [ 1 ]; do sleep 100; done          
+        env:
+        - name: NODE_MAX_OLD_SPACE_SIZE
+          value: "2000"
+        volumeMounts:
+        - mountPath: /etc/almond-cloud/config.d/config.yaml
+          name: config
+          readOnly: true
+          subPath: config.yaml
+        ports:
+        - containerPort: 8080
+          name: web
+        resources:
+          requests:
+            memory: 150M
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 20
+        securityContext:
+          capabilities:
+            add:
+            - SYS_ADMIN
+            - NET_ADMIN
+      securityContext:
+        fsGroup: 65534
+      serviceAccountName: default-editor
+      volumes:
+      - configMap:
+          name: almond-config
+        name: config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    nodePort: 30950
+  selector:
+    app: frontend

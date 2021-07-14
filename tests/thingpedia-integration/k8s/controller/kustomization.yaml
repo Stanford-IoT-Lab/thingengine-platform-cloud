@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+bases:
+- crd
+- rbac
+- manager
+
+patchesJson6902:
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: controller-manager
+  patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/1/args/1
+      value: --namespace=default

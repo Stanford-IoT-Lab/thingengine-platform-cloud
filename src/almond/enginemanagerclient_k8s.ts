@@ -40,15 +40,20 @@ interface CachedEngine {
     engine : Promise<EngineProxy>;
     socket : rpc.Socket;
 }
+
+async function backendState(backendUrl : string, userId : number) : Promise<string> {
+    const url = `${backendUrl}/engine-status?userid=${userId}`;
+    const resp = await Tp.Helpers.Http.get(url);
+    return JSON.parse(resp)["data"];
+}
+
 // poll every half second until engine is running or timedout. Error is thrown if timedout.
 async function waitForEngine(userId : number, backendUrl : string, millis : number) {
-    const url = `${backendUrl}/engine-status?userid=${userId}`;
     const waitms = 500;
     const deadline = Date.now() + millis;
     while (Date.now() <  deadline) {
-        const resp = await Tp.Helpers.Http.get(url);
-        const state = JSON.parse(resp)["data"];
-        if (state === "running")
+        const state = await backendState(backendUrl, userId);
+        if (state === UserK8sApi.Running)
             return;
         await sleep(waitms);
     }
@@ -97,7 +102,7 @@ export default class EngineManagerClientK8s extends events.EventEmitter {
 
         const rpcSocket = new rpc.Socket(jsonSocket);
 
-        rpcSocket.on('close', () => {
+        const onError = () => {
             if (this._expectClose)
                 return;
 
@@ -106,6 +111,15 @@ export default class EngineManagerClientK8s extends events.EventEmitter {
                 this.emit('socket-closed', userId);
             }
             deleted = true;
+
+        };
+
+        rpcSocket.on('close', () => {
+            onError();
+        });
+
+        jsonSocket.on('error', () => {
+            onError();
         });
 
         const promise = new Promise<EngineProxy>((resolve, reject) => {
@@ -178,9 +192,10 @@ export default class EngineManagerClientK8s extends events.EventEmitter {
 
     async isRunning(userId : number) : Promise<boolean> {
         const user = await this.userApi.getUser(userId);
-        if (user === null)
+        if (user === null || !user.status || !user.status.backend)
             return false;
-        return user.status && user.status.state === UserK8sApi.Running;
+        const state = await backendState(user.status.backend, userId);
+        return state === UserK8sApi.Running;
     }
 
     async getProcessId(userId : number) : Promise<number> {

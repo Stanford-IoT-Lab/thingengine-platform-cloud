@@ -17,11 +17,14 @@
 // limitations under the License.
 //
 
+import * as fs from 'fs';
+
 process.on('unhandledRejection', (up) => { throw up; });
 import '../../src/util/config_init';
 process.env.TEST_MODE = '1';
 
 import * as Config from '../../src/config';
+import * as EngineManager from '../../src/almond/enginemanagerclient';
 
 /*async function par(array) {
     await Promise.all(array.map((fn) => fn()));
@@ -34,6 +37,19 @@ async function seq(array) {
         await (await import(fn)).default();
     }
 }
+
+function inCluster() {
+    const path = '/var/run/secrets/kubernetes.io/serviceaccount/namespace';
+    try {
+        if (fs.existsSync(path))
+            return true;
+    } catch(err) {
+        return false;
+    }
+    return false;
+}
+
+EngineManager.init(inCluster());
 
 seq([
     ('./test_public_endpoints'),

@@ -1,0 +1,41 @@
+DATABASE_URL: "mysql://root:password@mariadb.default.svc.cluster.local/thingengine_test?charset=utf8mb4_bin"
+DATABASE_PROXY_URL: "http://dbproxy.default.svc.cluster.local:8200"
+SERVER_ORIGIN: "http://localhost:8080"
+CDN_HOST: /download
+WITH_THINGPEDIA: embedded
+WITH_LUINET: embedded
+THINGPEDIA_URL: /thingpedia
+ENABLE_DEVELOPER_PROGRAM: true
+ENABLE_ANONYMOUS_USER: true
+ENABLE_PROMETHEUS: true
+PROMETHEUS_ACCESS_TOKEN: my-prometheus-access-token
+DISCOURSE_SSO_SECRET: d836444a9e4084d5b224a60c208dce14
+AES_SECRET_KEY: 80bb23f93126074ba01410c8a2278c0c
+JWT_SIGNING_KEY: "not so secret key"
+SECRET_KEY: "not so secret key"
+NL_SERVER_URL: https://nlp-staging.almond.stanford.edu
+SUPPORTED_LANGUAGES:
+  - en-US
+  - it-IT
+  - zh-CN
+  - zh-TW
+USE_BRAND: stanford
+
+ABOUT_OVERRIDE:
+  index: stanford/about_index.pug
+  tos: stanford/about_tos.pug
+  privacy: stanford/about_privacy.pug
+
+EXTRA_ABOUT_PAGES:
+  - url: get-almond
+    view: stanford/about_get_almond.pug
+    title: "Get Almond"
+  - url: get-involved
+    view: stanford/about_get_involved.pug
+    title: "Get Involved With Almond"
+
+EXTRA_NAVBAR:
+  - url: https://oval.cs.stanford.edu
+    title: "OVAL Lab"
+
+DISCOURSE_SSO_REDIRECT: https://discourse.almond.stanford.edu

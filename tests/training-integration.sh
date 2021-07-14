@@ -74,7 +74,7 @@ ${srcdir}/dist/main.js bootstrap --force
 
 # load some more data into Thingpedia
 test -f $srcdir/tests/data/com.bing.zip || wget https://thingpedia.stanford.edu/thingpedia/api/v3/devices/package/com.bing -O $srcdir/tests/data/com.bing.zip
-eval $(ts-node $srcdir/tests/load_test_thingpedia.js)
+eval $(ts-node $srcdir/tests/load_test_thingpedia.ts)
 
 # set the config on all models
 tr -d '\n' > training-config.json <<EOF

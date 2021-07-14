@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+resources:
+  - sa.yaml
+  - dbproxy.yaml
+  - shared-backend.yaml
+  - frontend.yaml
+
+components:
+  - controller
+
+configMapGenerator:
+- name: almond-config
+  files:
+    - config.d/config.yaml

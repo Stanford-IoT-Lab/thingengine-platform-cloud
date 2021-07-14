@@ -68,7 +68,7 @@ async function testMyDevices(bob, nobody) {
     await assertHttpError(sessionRequest('/me/devices/create', 'POST', { kind: 'com.foo', invalid: [1, 2] }, bob),
         400, 'Missing or invalid parameter invalid');
     await assertHttpError(sessionRequest('/me/devices/create', 'POST', { kind: 'com.foo' }, bob),
-        400, (Config.WITH_THINGPEDIA === 'external' ? 'Unexpected HTTP error 404' : 'Not Found'));
+        400, 'Unexpected HTTP error 404');
 
     if (Config.WITH_THINGPEDIA === 'external') {
         await assertRedirect(sessionRequest('/me/devices/create', 'POST', {

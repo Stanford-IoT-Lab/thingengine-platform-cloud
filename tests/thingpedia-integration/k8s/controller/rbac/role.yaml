@@ -1,0 +1,42 @@
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  creationTimestamp: null
+  name: manager-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - endpoints
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - backend.almond.stanford.edu
+  resources:
+  - users
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - backend.almond.stanford.edu
+  resources:
+  - users/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - backend.almond.stanford.edu
+  resources:
+  - users/status
+  verbs:
+  - get
+  - patch
+  - update

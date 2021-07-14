@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "dbproxy"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "dbproxy"
+  template:
+    metadata:
+      labels:
+        app: "dbproxy"
+    spec:
+      containers:
+      - name: "main"
+        image: localhost/almond-cloud:latest
+        imagePullPolicy: IfNotPresent
+        command: ["/usr/local/bin/backend"]
+        args: ["dbproxy", "-port", "8200"]
+        env:
+        volumeMounts:
+        - mountPath: /etc/almond-cloud/config.d/config.yaml
+          subPath: config.yaml
+          name: config
+          readOnly: true
+        ports:
+        - containerPort: 8200
+          name: web
+        resources:
+          requests:
+            memory: 100M
+      volumes:
+      - name: config 
+        configMap:
+          name: almond-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dbproxy
+spec:
+  ports:
+  - port: 8200
+    protocol: TCP
+  selector:
+    app: dbproxy

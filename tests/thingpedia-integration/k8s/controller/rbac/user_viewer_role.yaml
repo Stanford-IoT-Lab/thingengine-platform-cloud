@@ -1,0 +1,20 @@
+# permissions for end users to view users.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: user-viewer-role
+rules:
+- apiGroups:
+  - backend.almond.stanford.edu
+  resources:
+  - users
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - backend.almond.stanford.edu
+  resources:
+  - users/status
+  verbs:
+  - get

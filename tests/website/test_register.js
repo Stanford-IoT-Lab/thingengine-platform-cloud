@@ -20,7 +20,6 @@
 
 
 import assert from 'assert';
-import * as fs from 'fs';
 import { assertHttpError, assertBanner, assertLoginRequired, sessionRequest, dbQuery } from './scaffold';
 import { startSession } from '../login';
 import * as minidom from '../util/minidom';
@@ -132,9 +131,8 @@ async function testRegister(charlie) {
 async function testDeleteUser(charlie, nobody) {
     const [charlieInfo] = await dbQuery(`select * from users where username = ?`, ['charlie']);
     assert(charlieInfo);
-    assert(fs.existsSync('./' + charlieInfo.cloud_id));
-    assert(await EngineManager.get().isRunning(charlieInfo.id));
     assert(await EngineManager.get().getEngine(charlieInfo.id));
+    assert(await EngineManager.get().isRunning(charlieInfo.id));
 
     await assertLoginRequired(sessionRequest('/user/delete', 'POST', {}, nobody));
 
@@ -146,8 +144,6 @@ async function testDeleteUser(charlie, nobody) {
 
     // check that the user is not running any more
     assert(!await EngineManager.get().isRunning(charlieInfo.id));
-    await assert.rejects(() => EngineManager.get().getEngine(charlieInfo.id));
-    assert(!fs.existsSync('./' + charlieInfo.cloud_id));
 }
 
 

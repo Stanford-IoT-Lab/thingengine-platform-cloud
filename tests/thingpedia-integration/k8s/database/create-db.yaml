@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: create-db
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: create-db
+        image: mariadb:10.2.22
+        command: 
+        - /bin/bash
+        - -c
+        - |
+          set -ex
+          while ! mysqladmin ping -h mariadb --silent; do
+              sleep 1
+          done
+          mysql -h mariadb -ppassword -e "create database if not exists thingengine_test;"

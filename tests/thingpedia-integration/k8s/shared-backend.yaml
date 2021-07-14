@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: "shared-backend"
+spec:
+  selector:
+    matchLabels:
+      app: "shared-backend"
+  replicas: 1
+  serviceName: shared-backend
+  template:
+    metadata:
+      labels:
+        app: "shared-backend"
+    spec:
+      serviceAccountName: default-editor
+      containers:
+      - name: "main"
+        image: localhost/almond-test:latest
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/bash"]
+        args:
+          - -c
+          - |
+            set -ex
+            cd /opt/almond-cloud
+            npx nyc /opt/almond-cloud/tests/thingpedia-integration/k8s/start.sh run-worker \
+                --thingpedia-url=http://frontend.default.svc.cluster.local:8080/thingpedia \
+                --nl-server-url=https://nlp-staging.almond.stanford.edu \
+                --oauth-redirect-origin=http://frontend.default.svc.cluster.local:8080 \
+                --faq-models={} \
+                --notification-config={} \
+                --locale=en-US \
+                &
+            wait $!
+            while [ 1 ]; do sleep 100; done          
+        workingDir: /srv/thingengine
+        volumeMounts:
+        - mountPath: /srv/thingengine
+          name: local-storage
+        resources:
+          requests:
+            memory: 200M
+        ports:
+          - containerPort: 8100
+            name: almond
+      securityContext:
+        fsGroup: 65534
+      volumes:
+      - name: local-storage
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shared-backend
+  labels:
+    app: shared-backend
+spec:
+  ports:
+  - port: 8100
+    protocol: TCP
+  selector:
+    app: shared-backend
